@@ -635,8 +635,7 @@ async function analizar() {
         <div class="verdict-label">Veredicto</div>
         <div class="verdict-title">${esc(d.veredicto)}</div>
         <div class="verdict-sub">${esc(d.asunto)}</div>
-        ${d.ia_usada ? `<div style="margin-top:0.6rem;font-size:0.75rem;opacity:0.75;font-family:system-ui,sans-serif">🤖 Zona gris — veredicto definitivo por modelo IA (DistilBERT)</div>` : ""}
-        ${!d.modelo_disponible && d.puntos >= 40 && d.puntos < 80 ? `<div style="margin-top:0.6rem;font-size:0.75rem;opacity:0.75;font-family:system-ui,sans-serif">⚠️ Zona gris — modelo IA no disponible en el servidor</div>` : ""}
+        ${!d.modelo_disponible && d.puntos >= 40 && d.puntos < 80 ? `<div style="margin-top:0.6rem;font-size:0.75rem;opacity:0.75;font-family:system-ui,sans-serif">⚠️Sospechoso, el modelo IA no está disponible en el servidor</div>` : ""}
         <div class="score-bar-wrap">
           <div class="score-bar-label"><span>Puntuación de riesgo</span><span>${d.puntos} pts</span></div>
           <div class="score-bar-track">
