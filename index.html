@@ -464,13 +464,13 @@
 
     <div class="form-row">
       <label>Correo electrónico</label>
-      <input type="email" id="inp-usuario" placeholder="tu@gmail.com" autocomplete="email">
+      <input type="email" id="inp-usuario" placeholder="tu@gmail.com" autocomplete="email" oninput="actualizarHint()">
     </div>
 
     <div class="form-row">
       <label>Contraseña de aplicación</label>
       <input type="password" id="inp-password" placeholder="xxxx xxxx xxxx xxxx" autocomplete="current-password">
-      <p class="hint">Genera una en: Cuenta Google → Seguridad → Contraseñas de aplicaciones</p>
+      <p class="hint" id="hint-password">Introduce tu correo para ver cómo obtener la contraseña de aplicación.</p>
     </div>
 
     <div class="cantidad-row">
@@ -699,7 +699,35 @@ function volverLista() {
   document.getElementById('btn-analizar').disabled = true;
   setStep(2);
 }
+  
+const HINTS_PROVEEDOR = {
+  "gmail.com":   "Gmail: Cuenta Google → Seguridad → Verificación en 2 pasos → Contraseñas de aplicaciones",
+  "outlook.com": "Implementacion de servidores de Outlook todavía en desarrollo",
+  "hotmail.com": "Hotmail pertenece a Outlook, y su implementacion está todavía en desarrollo",
+  "hotmail.es":  "Hotmail pertenece a Outlook, y su implementacion está todavía en desarrollo",
+  "live.com":    "Live pertenece a Outlook, y su implementacion está todavía en desarrollo",
+  "msn.com":     "MSN pertenece a Outlook, y su implementacion está todavía en desarrollo",
+  "yahoo.com":   "Yahoo: Página de seguridad de Yahoo → Generar contraseña de aplicación",
+  "yahoo.es":    "Yahoo: Página de seguridad de Yahoo → Generar contraseña de aplicación",
+  "ymail.com":   "Ymail: Página de seguridad de Yahoo → Generar contraseña de aplicación",
+};
 
+function actualizarHint() {
+  const val = document.getElementById('inp-usuario').value.trim().toLowerCase();
+  const dominio = val.includes('@') ? val.split('@')[1] : '';
+  const hintEl = document.getElementById('hint-password');
+  if (HINTS_PROVEEDOR[dominio]) {
+    hintEl.textContent = '💡 ' + HINTS_PROVEEDOR[dominio];
+    hintEl.style.color = 'var(--accent)';
+  } else if (dominio) {
+    hintEl.textContent = '⚠️ Proveedor no soportado. Válidos: Gmail y Yahoo.';
+    hintEl.style.color = 'var(--warn)';
+  } else {
+    hintEl.textContent = 'Introduce tu correo para ver cómo obtener la contraseña de aplicación.';
+    hintEl.style.color = '';
+  }
+}
+  
 function esc(s) {
   if (!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
