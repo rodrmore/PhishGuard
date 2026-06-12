@@ -399,7 +399,7 @@ def analizar():
             puntos += 80
             alertas.append("El remitente no ha podido demostrar su identidad oficial (SPF/DKIM).")
 
-        # --- MODELO IA (zona gris: entre 40 y 80 puntos) ---
+        # --- MODELO IA  ---
         resultado_ia = None
         ia_usada = False
 
@@ -423,7 +423,6 @@ def analizar():
             veredicto = "PHISHING"
             nivel = "danger"
         elif puntos >= 40:
-            # Zona gris: la IA tiene la última palabra si está disponible
             if ia_usada and resultado_ia == 1:
                 veredicto = "SOSPECHOSO: PHISHING SEGÚN IA"
                 nivel = "warning"
