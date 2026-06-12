@@ -17,10 +17,33 @@ from email.utils import parseaddr
 app = Flask(__name__)
 CORS(app)
 
-SERVIDOR_IMAP = "imap.gmail.com"
+SERVIDORES_IMAP = {
+    "gmail.com":        "imap.gmail.com",
+    "outlook.com":      "outlook.office365.com",
+    "hotmail.com":      "outlook.office365.com",
+    "hotmail.es":       "outlook.office365.com",
+    "live.com":         "outlook.office365.com",
+    "msn.com":          "outlook.office365.com",
+    "yahoo.com":        "imap.mail.yahoo.com",
+    "yahoo.es":         "imap.mail.yahoo.com",
+    "ymail.com":        "imap.mail.yahoo.com",
+}
+ 
+def obtener_servidor_imap(usuario: str):
+    """Devuelve el servidor IMAP correspondiente al dominio del correo.
+    Lanza ValueError si el proveedor no está soportado."""
+    dominio = usuario.split("@")[-1].lower().strip() if "@" in usuario else ""
+    servidor = SERVIDORES_IMAP.get(dominio)
+    if not servidor:
+        soportados = ", ".join(sorted(set(SERVIDORES_IMAP.values())))
+        raise ValueError(
+            f"Proveedor '@{dominio}' no soportado. "
+            f"Proveedores válidos: Gmail, Outlook/Hotmail/Live, Yahoo."
+        )
+    return servidor
 
 # ────────────────────────────────────────────────
-# Configuración del modelo 
+# Configuración del modelo - edita esta ruta
 # ────────────────────────────────────────────────
 RUTA_MODELO = ""
 
@@ -307,7 +330,8 @@ def conectar():
     cantidad = int(data.get("cantidad", 10))
 
     try:
-        mail = imaplib.IMAP4_SSL(SERVIDOR_IMAP)
+        servidor = obtener_servidor_imap(usuario)
+        mail = imaplib.IMAP4_SSL(servidor)
         mail.login(usuario, password)
         mail.select("inbox")
         _, imap_data = mail.search(None, "ALL")
@@ -333,7 +357,7 @@ def conectar():
             })
 
         mail.logout()
-        return jsonify({"total": total, "correos": correos})
+        return jsonify({"total": total, "correos": correos, "servidor": servidor})
 
     except imaplib.IMAP4.error as e:
         return jsonify({"error": f"Error de autenticación: {str(e)}"}), 401
@@ -350,7 +374,8 @@ def analizar():
     email_id = data.get("email_id", "").encode()
 
     try:
-        mail = imaplib.IMAP4_SSL(SERVIDOR_IMAP)
+        servidor = obtener_servidor_imap(usuario)
+        mail = imaplib.IMAP4_SSL(servidor)
         mail.login(usuario, password)
         mail.select("inbox")
 
